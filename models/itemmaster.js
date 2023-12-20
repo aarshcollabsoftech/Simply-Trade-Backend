@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const itemSchema = mongoose.Schema(
   {
-    customerId:{
+    customerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "customerMaster",
     },
@@ -9,27 +9,27 @@ const itemSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
-
     model: {
       type: String,
-      
+      trim: true,
     },
-    imeiNumber: [{ type: String, required: true }],
-    
-    serialNumber:{
-      type:String,
-      trim:true
+    imeiNumber: {
+      type: String,
+      required: true,
     },
-    gb:{
-      type:String,
-      trim:true
+    serialNumber: {
+      type: String,
+      trim: true,
     },
-    amount:{
-      type:String,
-      trim:true
+    gb: {
+      type: String,
+      trim: true,
     },
-    paymentDetails: 
-    {
+    amount: {
+      type: String,
+      trim: true,
+    },
+    paymentDetails: {
       type: Array,
       default: Array,
     },
@@ -54,3 +54,7 @@ const itemSchema = mongoose.Schema(
   }
 );
 module.exports = mongoose.model("itemMaster", itemSchema);
+   
+
+
+

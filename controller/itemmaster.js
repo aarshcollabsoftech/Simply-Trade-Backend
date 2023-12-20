@@ -1,4 +1,3 @@
-const { models } = require("mongoose");
 const Items = require("../models/itemmaster");
 const paymentaccountmaster = require("../models/paymentaccountmaster");
 
@@ -207,112 +206,11 @@ const paymentaccountmaster = require("../models/paymentaccountmaster");
 //   }
 // };
 
-/*********************************************** */
 
-// exports.createItem = async (req, res) => {
-//   try {
-//     const {
-//       customerId,
-//       phones,
-//       invoiceNumber,
-//       model,
-//       imeiNumber,
-//       serialNumber,
-//       gb,
-//       amount,
-//       paymentDetails,
-//       attachmentDetails,
-//     } = req.body;
-
-//     let lowbalance = false;
-
-//     if (phones) {
-//       // Handle phones array
-//       for (const phone of phones) {
-//         const {
-//           invoiceNumber,
-//           model,
-//           imeiNumber,
-//           serialNumber,
-//           gb,
-//           amount,
-//           paymentDetails,
-//           attachment,
-//         } = phone;
-
-//         for (const element of paymentDetails) {
-//           let payer = await paymentaccountmaster.findById(element.paymentAccount);
-//           const paymentdifference = payer.amount - element.paymentAmount;
-
-//           if (paymentdifference < 0 || payer.amount < element.paymentAmount) {
-//             lowbalance = true;
-//             break;
-//           } else {
-//             payer.amount = paymentdifference;
-//             await payer.save();
-//           }
-//         }
-
-//         if (lowbalance) {
-//           return res.status(400).json({ error: true, message: "Your Payment Account has reached its Minimum limit." });
-//         }
-
-//         await Items.create({
-//           customerId,
-//           invoiceNumber,
-//           model,
-//           imeiNumber,
-//           serialNumber,
-//           gb,
-//           amount,
-//           paymentDetails,
-//           attachment,
-//         });
-//       }
-//     } else {
-//       // Handle single phone case
-//       for (const element of imeiNumber) {
-       
-//           await Items.create({
-//             customerId,
-//             invoiceNumber,
-//             model,
-//             imeiNumber: element,
-//             serialNumber,
-//             gb,
-//             amount,
-//             paymentDetails,
-//             attachmentDetails,
-//           });
-//         }
-//       }
-//       const paymentDetail = paymentDetails[0];
-//       const payer = await paymentaccountmaster.findById(paymentDetail.paymentAccount);
-//       const paymentdifference = payer.amount - paymentDetail.paymentAmount;
-
-//       if (paymentdifference < 0 || payer.amount < paymentDetail.paymentAmount) {
-//         lowbalance = true;
-//       } else {
-//         payer.amount = paymentdifference;
-//         await payer.save();
-
-
-//       if (lowbalance) {
-//         return res.status(400).json({ error: true, message: "Your Payment Account has reached its Minimum limit." });
-//       }
-//     }
-
-//     return res.status(200).json({ error: false, data: "Phones Sold" });
-//   } catch (error) {
-//     console.log(error,"error======================");
-//     return res.status(400).json(error);
-//   }
-// };
-
-/******************************************/
 /*******************************************/
 exports.createItem = async (req, res) => {
   try {
+    // single  
     const {
       customerId,
       phones,
@@ -327,7 +225,7 @@ exports.createItem = async (req, res) => {
     } = req.body;
 
     let lowbalance = false;
-
+    //multiple 
     if (phones) {
       for (const phone of phones) {
         const {
@@ -357,22 +255,40 @@ exports.createItem = async (req, res) => {
         if (lowbalance) {
           return res.status(400).json({ error: true, message: "Your Payment Account has reached its Minimum limit." });
         }
-        for (const element of imeiNumber) {
+         // multiple create
         await Items.create({
           customerId,
           invoiceNumber,
           model,
-          imeiNumber:element,
+          imeiNumber,
           serialNumber,
           gb,
           amount,
           paymentDetails,
           attachmentDetails,
         });
+      
       }
+      // single create 
+    }
+    else{
+    for (const element of paymentDetails) {
+      let payer = await paymentaccountmaster.findById(element.paymentAccount);
+      const paymentdifference = payer.amount - element.paymentAmount;
+      
+      if (paymentdifference < 0 || payer.amount < element.paymentAmount) {
+        lowbalance = true;
+        break;
       }
-    } 
-    else {
+       else {
+        payer.amount = paymentdifference;
+        await payer.save();
+      }
+    }
+
+    if (lowbalance) {
+      return res.status(400).json({ error: true, message: "Your Payment Account has reached its Minimum limit." });
+    }
       for (const element of imeiNumber) {
         await Items.create({
           customerId,
@@ -386,31 +302,18 @@ exports.createItem = async (req, res) => {
           attachmentDetails,
         });
       }
-      const paymentDetail = paymentDetails[0];
-      const payer = await paymentaccountmaster.findById(paymentDetail.paymentAccount);
-      const paymentdifference = payer.amount - paymentDetail.paymentAmount;
-
-      if (paymentdifference < 0 || payer.amount < paymentDetail.paymentAmount) {
-        lowbalance = true;
-      } else {
-        payer.amount = paymentdifference;
-        await payer.save();
+      
     }
-
-    if (lowbalance) {
-      return res.status(400).json({ error: true, message: "Your Payment Account has reached its Minimum limit." });
-    }
-  }
-
   return res.status(200).json({ error: false, data: "Phones Sold" });
 } catch (error) {
+  console.log(error);
   return res.status(400).json(error);
 }
 };
         
 
 
-/************************* Get Items ********************/
+/********************** Get Items ********************/
 
 exports.getItem = async (req, res) => {
   try {
