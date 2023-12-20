@@ -270,6 +270,7 @@ exports.createItem = async (req, res) => {
       
       }
       // single create 
+      // llll
     }
     else{
     for (const element of paymentDetails) {
